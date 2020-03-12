@@ -1,27 +1,22 @@
 use crate::core::{CtorResult, new_string_like};
 
-pub type EmailAddressCtorResult<'value> = CtorResult<EmailAddress<'value>>;
-
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct EmailAddress<'a> {
-    value: &'a str
+    str: &'a str
 }
 
 impl<'a> EmailAddress<'a> {
-    pub(crate) const fn new(value: &'a str) -> Self { Self { value } }
+    pub(crate) const fn new(str: &'a str) -> Self { Self { str } }
 
-    pub const fn value(&self) -> &'a str { self.value }
+    pub const fn value(&self) -> &'a str { self.str }
 }
 
-pub fn new<'field_name, 'value>(
-    field_name: &'field_name str,
-    value: &'value str,
-) -> EmailAddressCtorResult<'value> {
-    new_string_like::<EmailAddress<'value>>(
+pub fn new<'a>(field_name: &str, str: &'a str) -> CtorResult<EmailAddress<'a>> {
+    new_string_like(
         field_name,
-        &EmailAddress::new,
+        |v| EmailAddress::new(v),
         r".+@.+",
-        value,
+        str,
     )
 }
 

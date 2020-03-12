@@ -2,7 +2,7 @@ use crate::core::{CtorResult, new_string, new_string_option};
 
 pub type String55Option<'a> = Option<String55<'a>>;
 
-pub type String55CtorResult<'value> = CtorResult<String55<'value>>;
+pub type String55CtorResult<'a> = CtorResult<String55<'a>>;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct String55<'a> {
@@ -15,25 +15,25 @@ impl<'a> String55<'a> {
     pub const fn value(&self) -> &'a str { self.value }
 }
 
-pub fn new<'field_name, 'value>(
-    field_name: &'field_name str,
-    str: &'value str,
-) -> String55CtorResult<'value> {
-    new_string::<String55<'value>>(
+pub fn new<'a>(
+    field_name: &str,
+    str: &'a str,
+) -> String55CtorResult<'a> {
+    new_string(
         field_name,
-        &String55::new,
+        |v| String55::new(v),
         55,
         str,
     )
 }
 
-pub fn new_option<'field_name, 'value>(
-    field_name: &'field_name str,
-    str: Option<&'value str>,
-) -> String55CtorResult<'value> {
-    new_string_option::<String55<'value>>(
+pub fn new_option<'a>(
+    field_name: &str,
+    str: Option<&'a str>,
+) -> String55CtorResult<'a> {
+    new_string_option(
         field_name,
-        &String55::new,
+        |v| String55::new(v),
         55,
         str,
     )

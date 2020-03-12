@@ -17,9 +17,9 @@ pub fn new(
     field_name: &str,
     value: f64,
 ) -> KilogramQuantityCtorResult {
-    new_decimal::<KilogramQuantity>(
+    new_decimal(
         field_name,
-        &KilogramQuantity::new,
+        |v| KilogramQuantity::new(v),
         0.05,
         100.0,
         value,

@@ -17,9 +17,9 @@ pub fn new(
     field_name: &str,
     value: usize,
 ) -> UnitQuantityCtorResult {
-    new_uint::<UnitQuantity>(
+    new_uint(
         field_name,
-        &UnitQuantity::new,
+        |v| UnitQuantity::new(v),
         1,
         1000,
         value,
