@@ -1,11 +1,11 @@
 [package]
 name = "constrained_type"
-version = "0.1.1"
-authors = ["Ron Lobo <r.gonazalez@ronlobo.com>"]
+version = "0.1.1-alpha.1"
+authors = ["Ron Lobo <code@ronlobo.com>"]
 edition = "2018"
 description = "On the fly value objects in Rust."
 readme = "./README.md"
-repository = "https://www.github.com/ronlobo/constrainted_type"
+repository = "https://www.github.com/ronlobo/constrained_type"
 license-file = "./LICENSE"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

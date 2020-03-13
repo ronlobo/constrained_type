@@ -31,15 +31,20 @@ pub fn new_string_option<'a, T, F>(
     where
         F: Fn(&'a str) -> T
 {
-    if str == None {
-        return Ok(None);
-    }
+    return match str {
+        Some(str) => {
+            if str.len() > max_len {
+                return Err(format!(
+                    "{} must not be greater than {} characters",
+                    field_name,
+                    max_len
+                ));
+            }
 
-    if str.unwrap().len() > max_len {
-        return Err(format!("{} must not be greater than {} characters", field_name.to_string(), max_len));
-    }
-
-    Ok(Some(ctor(str.unwrap())))
+            Ok(Some(ctor(str)))
+        }
+        _ => Ok(None)
+    };
 }
 
 pub fn new_string_like<'a, T, F>(
