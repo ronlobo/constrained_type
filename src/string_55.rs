@@ -1,24 +1,26 @@
 use crate::core::{CtorResult, new_string, new_string_option};
 
-pub type String55Option<'a> = Option<String55<'a>>;
+pub type String55Option = Option<String55>;
 
-pub type String55CtorResult<'a> = CtorResult<String55<'a>>;
+pub type String55CtorResult = CtorResult<String55>;
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub struct String55<'a> {
-    value: &'a str
+pub struct String55 {
+    value: String
 }
 
-impl<'a> String55<'a> {
-    pub(crate) const fn new(value: &'a str) -> Self { Self { value } }
+impl String55 {
+    pub(crate) fn new<S: Into<String>>(raw: S) -> CtorResult<String55> {
+        Ok(Some(Self { value: raw.into() }))
+    }
 
-    pub const fn value(&self) -> &'a str { self.value }
+    pub fn value(&self) -> &str { &self.value }
 }
 
-pub fn new<'a>(
+pub fn new(
     field_name: &str,
-    str: &'a str,
-) -> String55CtorResult<'a> {
+    str: &str,
+) -> String55CtorResult {
     new_string(
         field_name,
         |v| String55::new(v),
@@ -27,10 +29,10 @@ pub fn new<'a>(
     )
 }
 
-pub fn new_option<'a>(
+pub fn new_option(
     field_name: &str,
-    str: Option<&'a str>,
-) -> String55CtorResult<'a> {
+    str: Option<&str>,
+) -> String55CtorResult {
     new_string_option(
         field_name,
         |v| String55::new(v),
@@ -83,7 +85,7 @@ pub mod test {
                 "chars",
                 Some("🐺"),
             ),
-            Ok(Some(String55::new("🐺")))
+            String55::new("🐺")
         );
     }
 

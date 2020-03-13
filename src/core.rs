@@ -9,7 +9,7 @@ pub fn new_string<'a, T, F>(
     raw: &'a str,
 ) -> CtorResult<T>
     where
-        F: Fn(&'a str) -> T
+        F: Fn(&'a str) -> CtorResult<T>
 {
     if raw.len() == 0 {
         return Err(format!("{} must not be empty", field_name));
@@ -19,7 +19,7 @@ pub fn new_string<'a, T, F>(
         return Err(format!("{} must not be greater than {} characters", field_name, max_len));
     }
 
-    Ok(Option::from(ctor(raw)))
+    ctor(raw)
 }
 
 pub fn new_string_option<'a, T, F>(
@@ -29,7 +29,7 @@ pub fn new_string_option<'a, T, F>(
     str: Option<&'a str>,
 ) -> CtorResult<T>
     where
-        F: Fn(&'a str) -> T
+        F: Fn(&'a str) -> CtorResult<T>
 {
     return match str {
         Some(str) => {
@@ -41,7 +41,7 @@ pub fn new_string_option<'a, T, F>(
                 ));
             }
 
-            Ok(Some(ctor(str)))
+            ctor(str)
         }
         _ => Ok(None)
     };
@@ -54,10 +54,10 @@ pub fn new_string_like<'a, T, F>(
     str: &'a str,
 ) -> CtorResult<T>
     where
-        F: Fn(&'a str) -> T
+        F: Fn(&'a str) -> CtorResult<T>
 {
     if Regex::new(pattern).unwrap().is_match(str) {
-        return Ok(Some(ctor(str)));
+        return ctor(str);
     }
 
     Err(format!(
@@ -76,7 +76,7 @@ pub fn new_int<T, F>(
     int: isize,
 ) -> CtorResult<T>
     where
-        F: Fn(isize) -> T
+        F: Fn(isize) -> CtorResult<T>
 {
     if int < min_val {
         return Err(format!("{} must not be less than {}", field_name, min_val));
@@ -86,7 +86,7 @@ pub fn new_int<T, F>(
         return Err(format!("{} must not be greater than {}", field_name, max_val));
     }
 
-    Ok(Some(ctor(int)))
+    ctor(int)
 }
 
 pub fn new_uint<T, F>(
@@ -97,7 +97,7 @@ pub fn new_uint<T, F>(
     int: usize,
 ) -> CtorResult<T>
     where
-        F: Fn(usize) -> T
+        F: Fn(usize) -> CtorResult<T>
 {
     if int < min_val {
         return Err(format!("{} must not be less than {}", field_name, min_val));
@@ -107,7 +107,7 @@ pub fn new_uint<T, F>(
         return Err(format!("{} must not be greater than {}", field_name, max_val));
     }
 
-    Ok(Some(ctor(int)))
+    ctor(int)
 }
 
 pub fn new_decimal<T, F>(
@@ -118,7 +118,7 @@ pub fn new_decimal<T, F>(
     decimal: f64,
 ) -> CtorResult<T>
     where
-        F: Fn(f64) -> T
+        F: Fn(f64) -> CtorResult<T>
 {
     if decimal < min_val {
         return Err(format!("{} must not be less than {}", field_name, min_val));
@@ -128,5 +128,5 @@ pub fn new_decimal<T, F>(
         return Err(format!("{} must not be greater than {}", field_name, max_val));
     }
 
-    Ok(Some(ctor(decimal)))
+    ctor(decimal)
 }

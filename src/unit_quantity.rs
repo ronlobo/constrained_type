@@ -1,14 +1,14 @@
 use crate::core::{CtorResult, new_uint};
 
-type UnitQuantityCtorResult = CtorResult<UnitQuantity>;
-
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct UnitQuantity {
     value: usize
 }
 
 impl UnitQuantity {
-    pub(crate) const fn new(value: usize) -> Self { Self { value } }
+    pub(crate) const fn new(value: usize) -> CtorResult<UnitQuantity> {
+        Ok(Some(Self { value }))
+    }
 
     pub const fn value(&self) -> usize { self.value }
 }
@@ -16,7 +16,7 @@ impl UnitQuantity {
 pub fn new(
     field_name: &str,
     value: usize,
-) -> UnitQuantityCtorResult {
+) -> CtorResult<UnitQuantity> {
     new_uint(
         field_name,
         |v| UnitQuantity::new(v),
@@ -56,7 +56,7 @@ pub mod test {
                 "qty",
                 1,
             ),
-            Ok(Some(UnitQuantity::new(1)))
+            UnitQuantity::new(1)
         );
     }
 }

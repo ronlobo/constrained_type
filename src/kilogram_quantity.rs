@@ -1,14 +1,14 @@
 use crate::core::{CtorResult, new_decimal};
 
-type KilogramQuantityCtorResult = CtorResult<KilogramQuantity>;
-
 #[derive(Debug, Clone, PartialEq, PartialOrd)]
 pub struct KilogramQuantity {
     value: f64
 }
 
 impl KilogramQuantity {
-    pub(crate) const fn new(value: f64) -> Self { Self { value } }
+    pub(crate) const fn new(value: f64) -> CtorResult<KilogramQuantity> {
+        Ok(Some(Self { value }))
+    }
 
     pub const fn value(&self) -> f64 { self.value }
 }
@@ -16,7 +16,7 @@ impl KilogramQuantity {
 pub fn new(
     field_name: &str,
     value: f64,
-) -> KilogramQuantityCtorResult {
+) -> CtorResult<KilogramQuantity> {
     new_decimal(
         field_name,
         |v| KilogramQuantity::new(v),
@@ -56,7 +56,7 @@ pub mod test {
                 "qty",
                 1.0,
             ),
-            Ok(Some(KilogramQuantity::new(1.0)))
+            KilogramQuantity::new(1.0)
         );
     }
 }

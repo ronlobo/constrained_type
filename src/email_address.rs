@@ -1,17 +1,19 @@
 use crate::core::{CtorResult, new_string_like};
 
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub struct EmailAddress<'a> {
-    str: &'a str
+pub struct EmailAddress {
+    value: String
 }
 
-impl<'a> EmailAddress<'a> {
-    pub(crate) const fn new(str: &'a str) -> Self { Self { str } }
+impl EmailAddress {
+    pub(crate) fn new<S: Into<String>>(raw: S) -> CtorResult<EmailAddress> {
+        Ok(Some(Self { value: raw.into() }))
+    }
 
-    pub const fn value(&self) -> &'a str { self.str }
+    pub fn value(&self) -> &str { self.value.as_str() }
 }
 
-pub fn new<'a>(field_name: &str, str: &'a str) -> CtorResult<EmailAddress<'a>> {
+pub fn new(field_name: &str, str: &str) -> CtorResult<EmailAddress> {
     new_string_like(
         field_name,
         |v| EmailAddress::new(v),
@@ -49,7 +51,7 @@ pub mod test {
                 "email",
                 "acmeinc@example.com",
             ),
-            Ok(Some(EmailAddress::new("acmeinc@example.com")))
+            EmailAddress::new("acmeinc@example.com")
         );
     }
 }
