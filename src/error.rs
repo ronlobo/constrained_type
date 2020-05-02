@@ -2,8 +2,9 @@
 
 //! Error types for the crate
 
-use thiserror::Error;
 use std::fmt;
+
+use thiserror::Error;
 
 /// An alias for results returned by functions of this crate
 pub type ConstrainedTypeResult<T> = ::std::result::Result<T, ConstrainedTypeError>;

@@ -1,45 +1,45 @@
-//! Error types for the crate
+//! Constrained String
 
 #![deny(missing_docs)]
 
-use crate::error::{ConstrainedTypeResult, ConstrainedTypeError};
-use crate::error::ConstrainedTypeErrorKind::{InvalidOption, InvalidMaxLen};
+use crate::error::{ConstrainedTypeError, ConstrainedTypeResult};
+use crate::error::ConstrainedTypeErrorKind::{InvalidMaxLen, InvalidOption};
 
-/// A builder function for string values validating for existence and max character length
+/// A builder function constraining a String to be not empty and neither exceeding a character limit
 pub fn new_string<'a, T, F>(
     field_name: &str,
     ctor: F,
     max_len: usize,
-    raw: &'a str,
+    val: &'a str,
 ) -> ConstrainedTypeResult<T>
     where
         F: Fn(&'a str) -> T
 {
-    if raw.len() == 0 {
+    if val.len() == 0 {
         return ConstrainedTypeError::from(InvalidOption {
             field_name: field_name.to_string()
         }).into();
     }
 
-    if raw.len() > max_len {
+    if val.len() > max_len {
         return ConstrainedTypeError::from(InvalidMaxLen {
             field_name: field_name.to_string(),
             expected: max_len.to_string(),
-            found: raw.len().to_string(),
+            found: val.len().to_string(),
         }).into();
     }
 
-    Ok(ctor(raw))
+    Ok(ctor(val))
 }
 
 #[cfg(test)]
 mod test {
     use crate::error::ConstrainedTypeError;
-    use crate::error::ConstrainedTypeErrorKind::{InvalidOption, InvalidMaxLen};
+    use crate::error::ConstrainedTypeErrorKind::{InvalidMaxLen, InvalidOption};
 
     mod string_55 {
-        use crate::string::new_string;
         use crate::error::ConstrainedTypeResult;
+        use crate::string::new_string;
 
         #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
         pub struct String55 {

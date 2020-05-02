@@ -1,58 +1,61 @@
-//! Error types for the crate
+//! Constrained integer number
 
 #![deny(missing_docs)]
 
-use crate::error::ConstrainedTypeErrorKind::{InvalidMinVal, InvalidMaxVal};
-use crate::error::{ConstrainedTypeResult, ConstrainedTypeError};
+use num_traits::PrimInt;
 
-/// A builder function for integer values validating for min/max values
-pub fn new_int<T, F>(
+use crate::error::{ConstrainedTypeError, ConstrainedTypeResult};
+use crate::error::ConstrainedTypeErrorKind::{InvalidMaxVal, InvalidMinVal};
+
+/// A builder function constraining an integer number between a minimum and maximum value
+pub fn new_int<T, F, V>(
     field_name: &str,
     ctor: F,
-    min_val: isize,
-    max_val: isize,
-    int: isize,
+    min_val: V,
+    max_val: V,
+    val: V,
 ) -> ConstrainedTypeResult<T>
     where
-        F: Fn(isize) -> T
+        F: Fn(V) -> T,
+        V: PrimInt + ToString
 {
-    if int < min_val {
-        return Err(ConstrainedTypeError::from(InvalidMinVal {
+    if val < min_val {
+        return ConstrainedTypeError::from(InvalidMinVal {
             field_name: field_name.into(),
             expected: min_val.to_string(),
-            found: int.to_string(),
-        }));
+            found: val.to_string(),
+        }).into();
     }
 
-    if int > max_val {
-        return Err(ConstrainedTypeError::from(InvalidMaxVal {
+    if val > max_val {
+        return ConstrainedTypeError::from(InvalidMaxVal {
             field_name: field_name.into(),
             expected: max_val.to_string(),
-            found: int.to_string(),
-        }));
+            found: val.to_string(),
+        }).into();
     }
 
-    Ok(ctor(int))
+    Ok(ctor(val))
 }
 
 #[cfg(test)]
 mod test {
     use crate::error::ConstrainedTypeError;
-    use crate::error::ConstrainedTypeErrorKind::{InvalidMinVal, InvalidMaxVal};
+    use crate::error::ConstrainedTypeErrorKind::{InvalidMaxVal, InvalidMinVal};
 
-    mod factor {
-        use crate::int::new_int;
+    mod unit_quantity {
         use crate::error::ConstrainedTypeResult;
+        use crate::int::new_int;
 
-        const MIN_VAL: isize = -10;
-        const MAX_VAL: isize = 10;
+        const MIN_VAL: isize = 1;
+        const MAX_VAL: isize = 1000;
 
         #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-        pub struct Factor {
+        pub struct UnitQuantity {
             pub(crate) value: isize
         }
 
-        impl Factor {
+        impl UnitQuantity {
             pub(crate) const fn new(value: isize) -> Self {
                 Self { value }
             }
@@ -63,10 +66,10 @@ mod test {
         pub fn new(
             field_name: &str,
             value: isize,
-        ) -> ConstrainedTypeResult<Factor> {
+        ) -> ConstrainedTypeResult<UnitQuantity> {
             new_int(
                 field_name,
-                |v| Factor::new(v),
+                |v| UnitQuantity::new(v),
                 MIN_VAL,
                 MAX_VAL,
                 value,
@@ -77,38 +80,38 @@ mod test {
     #[test]
     fn it_errors_on_out_of_bounds_value() {
         assert_eq!(
-            factor::new(
-                "factor",
-                -11,
+            unit_quantity::new(
+                "qty",
+                0,
             ),
             ConstrainedTypeError::from(InvalidMinVal {
-                field_name: "factor".to_string(),
-                expected: (-10).to_string(),
-                found: (-11).to_string(),
+                field_name: "qty".to_string(),
+                expected: 1.to_string(),
+                found: 0.to_string(),
             }).into()
         );
 
         assert_eq!(
-            factor::new(
-                "factor",
-                11,
+            unit_quantity::new(
+                "qty",
+                1001,
             ),
             ConstrainedTypeError::from(InvalidMaxVal {
-                field_name: "factor".to_string(),
-                expected: 10.to_string(),
-                found: 11.to_string(),
+                field_name: "qty".to_string(),
+                expected: 1000.to_string(),
+                found: 1001.to_string(),
             }).into()
         );
     }
 
     #[test]
-    fn it_can_construct_a_factor() {
+    fn it_can_construct_a_unit_quantity() {
         assert_eq!(
-            factor::new(
-                "factor",
-                -1,
+            unit_quantity::new(
+                "qty",
+                1,
             ).unwrap().value(),
-            -1
+            1
         );
     }
 }

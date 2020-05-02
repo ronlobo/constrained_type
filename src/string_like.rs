@@ -1,30 +1,31 @@
-//! Error types for the crate
+//! Constrained String Like
 
 #![deny(missing_docs)]
 
-use crate::error::{ConstrainedTypeResult, ConstrainedTypeError};
-use crate::error::ConstrainedTypeErrorKind::InvalidPattern;
 use regex::Regex;
 
-/// A builder function for string like values validating via a pattern
+use crate::error::{ConstrainedTypeError, ConstrainedTypeResult};
+use crate::error::ConstrainedTypeErrorKind::InvalidPattern;
+
+/// A builder function constraining a String to match a given pattern
 pub fn new_string_like<'a, T, F>(
     field_name: &str,
     ctor: F,
     pattern: Regex,
-    raw: &'a str,
+    val: &'a str,
 ) -> ConstrainedTypeResult<T>
     where
         F: Fn(&'a str) -> T
 {
-    if !pattern.is_match(raw) {
+    if !pattern.is_match(val) {
         return ConstrainedTypeError::from(InvalidPattern {
             field_name: field_name.to_string(),
             expected: pattern.to_string(),
-            found: raw.to_string(),
+            found: val.to_string(),
         }).into();
     }
 
-    Ok(ctor(raw))
+    Ok(ctor(val))
 }
 
 #[cfg(test)]
@@ -33,9 +34,10 @@ pub mod test {
     use crate::error::ConstrainedTypeErrorKind::InvalidPattern;
 
     mod email_address {
-        use crate::string_like::new_string_like;
-        use crate::error::ConstrainedTypeResult;
         use regex::Regex;
+
+        use crate::error::ConstrainedTypeResult;
+        use crate::string_like::new_string_like;
 
         #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
         pub struct EmailAddress {

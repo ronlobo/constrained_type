@@ -1,29 +1,29 @@
-//! Error types for the crate
+//! Constrained String Option
 
 #![deny(missing_docs)]
 
-use crate::error::{ConstrainedTypeResult, ConstrainedTypeError};
+use crate::error::{ConstrainedTypeError, ConstrainedTypeResult};
 use crate::error::ConstrainedTypeErrorKind::InvalidMaxLen;
 
-/// A builder function for optional string values validating for max character length
+/// A builder function constraining an optional String to not exceed a character limit
 pub fn new_string_option<'a, T, F>(
     field_name: &str,
     ctor: F,
     max_len: usize,
-    raw: Option<&'a str>,
+    val: Option<&'a str>,
 ) -> ConstrainedTypeResult<T>
     where
         F: Fn(Option<&'a str>) -> T
 {
-    if raw != None && raw.unwrap().len() > max_len {
+    if val != None && val.unwrap().len() > max_len {
         return ConstrainedTypeError::from(InvalidMaxLen {
             field_name: field_name.to_string(),
             expected: max_len.to_string(),
-            found: raw.unwrap().len().to_string(),
+            found: val.unwrap().len().to_string(),
         }).into();
     }
 
-    Ok(ctor(raw))
+    Ok(ctor(val))
 }
 
 #[cfg(test)]
@@ -32,8 +32,8 @@ mod test {
     use crate::error::ConstrainedTypeErrorKind::InvalidMaxLen;
 
     mod string_55_option {
-        use crate::string_option::new_string_option;
         use crate::error::ConstrainedTypeResult;
+        use crate::string_option::new_string_option;
 
         #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
         pub struct String55Option {

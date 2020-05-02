@@ -1,48 +1,51 @@
-//! Error types for the crate
+//! Constrained floating point number
 
 #![deny(missing_docs)]
 
-use crate::error::ConstrainedTypeErrorKind::{InvalidMinVal, InvalidMaxVal};
-use crate::error::{ConstrainedTypeResult, ConstrainedTypeError};
+use num_traits::Float;
 
-/// A builder function for decimal values validating for min/max values
-pub fn new_decimal<T, F>(
+use crate::error::{ConstrainedTypeError, ConstrainedTypeResult};
+use crate::error::ConstrainedTypeErrorKind::{InvalidMaxVal, InvalidMinVal};
+
+/// A builder function constraining a floating point number between a min/max value
+pub fn new_float<T, F, V>(
     field_name: &str,
     ctor: F,
-    min_val: f64,
-    max_val: f64,
-    decimal: f64,
+    min_val: V,
+    max_val: V,
+    val: V,
 ) -> ConstrainedTypeResult<T>
     where
-        F: Fn(f64) -> T
+        F: Fn(V) -> T,
+        V: Float + ToString
 {
-    if decimal < min_val {
+    if val < min_val {
         return ConstrainedTypeError::from(InvalidMinVal {
             field_name: field_name.to_string(),
             expected: min_val.to_string(),
-            found: decimal.to_string(),
+            found: val.to_string(),
         }).into();
     }
 
-    if decimal > max_val {
+    if val > max_val {
         return ConstrainedTypeError::from(InvalidMaxVal {
             field_name: field_name.to_string(),
             expected: max_val.to_string(),
-            found: decimal.to_string(),
+            found: val.to_string(),
         }).into();
     }
 
-    Ok(ctor(decimal))
+    Ok(ctor(val))
 }
 
 #[cfg(test)]
 mod test {
     use crate::error::ConstrainedTypeError;
-    use crate::error::ConstrainedTypeErrorKind::{InvalidMinVal, InvalidMaxVal};
+    use crate::error::ConstrainedTypeErrorKind::{InvalidMaxVal, InvalidMinVal};
 
     mod kilogram_quantity {
         use crate::error::ConstrainedTypeResult;
-        use crate::decimal::new_decimal;
+        use crate::float::new_float;
 
         #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
         pub struct KilogramQuantity {
@@ -61,7 +64,7 @@ mod test {
             field_name: &str,
             value: f64,
         ) -> ConstrainedTypeResult<KilogramQuantity> {
-            new_decimal(
+            new_float(
                 field_name,
                 |v| KilogramQuantity::new(v),
                 0.05,
