@@ -46,7 +46,7 @@ pub enum ConstrainedTypeErrorKind {
     #[error("{field_name:?} must not be empty")]
     InvalidOption {
         /// Field name shown in the error
-        field_name: String
+        field_name: String,
     },
     /// Character data length exceeded the limit
     #[error("{field_name:?} must not be greater than {expected:?} characters, {found:?}")]
@@ -75,9 +75,7 @@ impl ConstrainedTypeError {
 
 impl From<ConstrainedTypeErrorKind> for ConstrainedTypeError {
     fn from(kind: ConstrainedTypeErrorKind) -> ConstrainedTypeError {
-        ConstrainedTypeError {
-            kind
-        }
+        ConstrainedTypeError { kind }
     }
 }
 
@@ -92,4 +90,3 @@ impl fmt::Display for ConstrainedTypeError {
         fmt::Display::fmt(&self.kind, f)
     }
 }
-

@@ -4,8 +4,8 @@
 
 use num_traits::Float;
 
-use crate::error::{ConstrainedTypeError, ConstrainedTypeResult};
 use crate::error::ConstrainedTypeErrorKind::{InvalidMaxVal, InvalidMinVal};
+use crate::error::{ConstrainedTypeError, ConstrainedTypeResult};
 
 /// A builder function constraining a floating point number between a min/max value
 pub fn new_float<T, F, V>(
@@ -15,16 +15,17 @@ pub fn new_float<T, F, V>(
     max_val: V,
     val: V,
 ) -> ConstrainedTypeResult<T>
-    where
-        F: Fn(V) -> T,
-        V: Float + ToString
+where
+    F: Fn(V) -> T,
+    V: Float + ToString,
 {
     if val < min_val {
         return ConstrainedTypeError::from(InvalidMinVal {
             field_name: field_name.to_string(),
             expected: min_val.to_string(),
             found: val.to_string(),
-        }).into();
+        })
+        .into();
     }
 
     if val > max_val {
@@ -32,7 +33,8 @@ pub fn new_float<T, F, V>(
             field_name: field_name.to_string(),
             expected: max_val.to_string(),
             found: val.to_string(),
-        }).into();
+        })
+        .into();
     }
 
     Ok(ctor(val))
@@ -49,7 +51,7 @@ mod test {
 
         #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
         pub struct KilogramQuantity {
-            value: f64
+            value: f64,
         }
 
         impl KilogramQuantity {
@@ -57,58 +59,41 @@ mod test {
                 Self { value }
             }
 
-            pub const fn value(&self) -> f64 { self.value }
+            pub const fn value(&self) -> f64 {
+                self.value
+            }
         }
 
-        pub fn new(
-            field_name: &str,
-            value: f64,
-        ) -> ConstrainedTypeResult<KilogramQuantity> {
-            new_float(
-                field_name,
-                |v| KilogramQuantity::new(v),
-                0.05,
-                100.0,
-                value,
-            )
+        pub fn new(field_name: &str, value: f64) -> ConstrainedTypeResult<KilogramQuantity> {
+            new_float(field_name, |v| KilogramQuantity::new(v), 0.05, 100.0, value)
         }
     }
 
     #[test]
     fn it_errors_on_out_of_bounds_value() {
         assert_eq!(
-            kilogram_quantity::new(
-                "qty",
-                0.04,
-            ),
+            kilogram_quantity::new("qty", 0.04),
             ConstrainedTypeError::from(InvalidMinVal {
                 field_name: "qty".to_string(),
                 expected: (0.05).to_string(),
                 found: (0.04).to_string(),
-            }).into()
+            })
+            .into()
         );
 
         assert_eq!(
-            kilogram_quantity::new(
-                "qty",
-                100.1,
-            ),
+            kilogram_quantity::new("qty", 100.1),
             ConstrainedTypeError::from(InvalidMaxVal {
                 field_name: "qty".to_string(),
                 expected: (100).to_string(),
                 found: (100.1).to_string(),
-            }).into()
+            })
+            .into()
         );
     }
 
     #[test]
     fn it_can_construct_an_kilogram_quantity() {
-        assert_eq!(
-            kilogram_quantity::new(
-                "qty",
-                1.0,
-            ).unwrap().value(),
-            1.0
-        );
+        assert_eq!(kilogram_quantity::new("qty", 1.0).unwrap().value(), 1.0);
     }
 }

@@ -1,26 +1,21 @@
-:construction: ⍺ :construction:
+# Constrained Type
 
-A simple library to create on the fly value objects aka constrained types.
+[![Coverage Status](https://coveralls.io/repos/github/ronlobo/constrained_type/badge.svg?branch=master)](https://coveralls.io/github/ronlobo/constrained_type?branch=master)
 
-Motivation:
+This is a simple project (personal learning) to help creating on the fly value objects aka constrained types.
 
-Statically typed languages allow for better guarantees of correctness upon successful compilation.    
+It provides some helper functions to construct these from Rust primitives.
 
-However, not everything can be type-checked at compile-time, e.g. not all actor inputs are known at runtime.
+## Motivation
 
-When it comes to data integrity in our systems, there is nothing more time wasting than having to write
-retro scripts to fix the inconsistencies caused by invalid state changes in the first place. 
+Constrained types guarantee valid state and behaviour from dynamic runtime inputs after construction.
 
-Poisoned inputs also open the door for random system crashes and security vulnerabilities.
+This can be useful when creating simple wrapper types or so called newtypes.
 
-There are some opinions around where to apply these validations, how to classify and handle them.
+If an input does not meet the validation criteria, an error result is returned instead.
 
-Ideally, invalid state changes are prevented during a type's instantiation process, not only for example at the RestAPI or DB repository level.  
+The goal is to remove defensive code statements, ease implementing business invariants and guarantee correct state at runtime.
 
-Constrained types guarantee a valid state and behaviour from dynamic runtime inputs and result in an error otherwise.
-This error is very specific to the domain and problem and also called domain error.
+Heavily inspired by <a href="https://github.com/swlaschin/DomainModelingMadeFunctional">"Domain Modelling Made Functional"</a>.
 
-Constrained types push their validation to the construction process of the type.
-This helps removing defensive code statements, implementing business invariants and correct state at runtime.
-
-Heavily inspired by <a href="https://github.com/swlaschin/DomainModelingMadeFunctional">"Domain Modelling Made Functional"</a>. 
+For more complex types take a look at the various builder crates.

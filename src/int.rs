@@ -4,8 +4,8 @@
 
 use num_traits::PrimInt;
 
-use crate::error::{ConstrainedTypeError, ConstrainedTypeResult};
 use crate::error::ConstrainedTypeErrorKind::{InvalidMaxVal, InvalidMinVal};
+use crate::error::{ConstrainedTypeError, ConstrainedTypeResult};
 
 /// A builder function constraining an integer number between a minimum and maximum value
 pub fn new_int<T, F, V>(
@@ -15,16 +15,17 @@ pub fn new_int<T, F, V>(
     max_val: V,
     val: V,
 ) -> ConstrainedTypeResult<T>
-    where
-        F: Fn(V) -> T,
-        V: PrimInt + ToString
+where
+    F: Fn(V) -> T,
+    V: PrimInt + ToString,
 {
     if val < min_val {
         return ConstrainedTypeError::from(InvalidMinVal {
             field_name: field_name.into(),
             expected: min_val.to_string(),
             found: val.to_string(),
-        }).into();
+        })
+        .into();
     }
 
     if val > max_val {
@@ -32,7 +33,8 @@ pub fn new_int<T, F, V>(
             field_name: field_name.into(),
             expected: max_val.to_string(),
             found: val.to_string(),
-        }).into();
+        })
+        .into();
     }
 
     Ok(ctor(val))
@@ -52,7 +54,7 @@ mod test {
 
         #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
         pub struct UnitQuantity {
-            pub(crate) value: isize
+            pub(crate) value: isize,
         }
 
         impl UnitQuantity {
@@ -60,13 +62,12 @@ mod test {
                 Self { value }
             }
 
-            pub const fn value(&self) -> isize { self.value }
+            pub const fn value(&self) -> isize {
+                self.value
+            }
         }
 
-        pub fn new(
-            field_name: &str,
-            value: isize,
-        ) -> ConstrainedTypeResult<UnitQuantity> {
+        pub fn new(field_name: &str, value: isize) -> ConstrainedTypeResult<UnitQuantity> {
             new_int(
                 field_name,
                 |v| UnitQuantity::new(v),
@@ -80,38 +81,28 @@ mod test {
     #[test]
     fn it_errors_on_out_of_bounds_value() {
         assert_eq!(
-            unit_quantity::new(
-                "qty",
-                0,
-            ),
+            unit_quantity::new("qty", 0,),
             ConstrainedTypeError::from(InvalidMinVal {
                 field_name: "qty".to_string(),
                 expected: 1.to_string(),
                 found: 0.to_string(),
-            }).into()
+            })
+            .into()
         );
 
         assert_eq!(
-            unit_quantity::new(
-                "qty",
-                1001,
-            ),
+            unit_quantity::new("qty", 1001,),
             ConstrainedTypeError::from(InvalidMaxVal {
                 field_name: "qty".to_string(),
                 expected: 1000.to_string(),
                 found: 1001.to_string(),
-            }).into()
+            })
+            .into()
         );
     }
 
     #[test]
     fn it_can_construct_a_unit_quantity() {
-        assert_eq!(
-            unit_quantity::new(
-                "qty",
-                1,
-            ).unwrap().value(),
-            1
-        );
+        assert_eq!(unit_quantity::new("qty", 1,).unwrap().value(), 1);
     }
 }
