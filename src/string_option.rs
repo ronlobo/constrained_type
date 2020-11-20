@@ -12,16 +12,15 @@ pub fn new_string_option<'a, T, F>(
     max_len: usize,
     val: Option<&'a str>,
 ) -> ConstrainedTypeResult<T>
-where
-    F: Fn(Option<&'a str>) -> T,
+    where
+        F: Fn(Option<&'a str>) -> T,
 {
     if val != None && val.unwrap().len() > max_len {
         return ConstrainedTypeError::from(InvalidMaxLen {
             field_name: field_name.to_string(),
             expected: max_len.to_string(),
             found: val.unwrap().len().to_string(),
-        })
-        .into();
+        }).into();
     }
 
     Ok(ctor(val))
@@ -74,26 +73,25 @@ mod test {
     #[test]
     fn it_validates_a_string55_option_max_len() {
         assert_eq!(
-            string_55_option::new("name", Some("🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺"),),
+            string_55_option::new("name", Some("🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺")),
             ConstrainedTypeError::from(InvalidMaxLen {
                 field_name: "name".to_string(),
                 expected: (55).to_string(),
                 found: (56).to_string(),
-            })
-            .into()
+            }).into()
         );
     }
 
     #[test]
     fn it_can_construct_a_string55option_with_some() {
         assert_eq!(
-            string_55_option::new("name", Some("🐺"),).unwrap().value(),
+            string_55_option::new("name", Some("🐺")).unwrap().value(),
             Some("🐺")
         );
     }
 
     #[test]
     fn it_can_construct_a_string55option_with_none() {
-        assert_eq!(string_55_option::new("name", None,).unwrap().value(), None);
+        assert_eq!(string_55_option::new("name", None).unwrap().value(), None);
     }
 }
