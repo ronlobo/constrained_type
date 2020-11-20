@@ -1,64 +1,78 @@
+name: Constrained Type CI
+
 on: [push, pull_request]
 
-name: Continuous integration
-
 jobs:
-  check:
-    name: Check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: check
+  build-and-test:
+    name: ${{ matrix.name }}
 
-  test:
-    name: Test Suite
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
+    runs-on: ${{ matrix.os }}
 
-  fmt:
-    name: Rustfmt
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
-        with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - run: rustup component add rustfmt
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+          - os: ubuntu-latest
+            name: Linux Binary 64-Bit
+            target: x86_64-unknown-linux-musl
 
-  clippy:
-    name: Clippy
-    runs-on: ubuntu-latest
+          - os: macos-latest
+            name: MacOS Binary 64-Bit
+            target: x86_64-apple-darwin
+            env:
+              MACOSX_DEPLOYMENT_TARGET: 10.7
+
+          - os: windows-latest
+            name: Windows Binary 64-Bit
+            target: x86_64-pc-windows-msvc
+
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/toolchain@v1
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Add rustup target
+        run: rustup target add ${{ matrix.target }}
+
+      - name: Install apt packages
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+        run: sudo apt-get install musl-tools libssl-dev
+
+      # needed to fix file corruption of cache
+      # https://github.com/actions/cache/issues/403
+      - name: Install GNU tar
+        if: ${{ matrix.os == 'macos-latest' }}
+        run: |
+          brew install gnu-tar
+          echo "/usr/local/opt/gnu-tar/libexec/gnubin" >> $GITHUB_PATH
+
+      - name: Store or retrieve cargo caches
+        uses: actions/cache@v2
         with:
-          profile: minimal
-          toolchain: stable
-          override: true
-      - run: rustup component add clippy
-      - uses: actions-rs/cargo@v1
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-rust-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Build in debug mode
+        run: cargo build --target ${{ matrix.target }} --locked
+
+      - name: Build in release mode
+        run: cargo build --release --target ${{ matrix.target }} --locked
+
+      - name: Run unit tests in debug mode
+        run: cargo test --lib --target ${{ matrix.target }}
+
+      - name: Run doc tests in release mode
+        run: cargo test --release --doc --target ${{ matrix.target }}
+
+      - name: Create code coverage report
+        if: ${{ matrix.os == 'ubuntu-latest' && github.event_name == 'push' }}
+        uses: actions-rs/tarpaulin@v0.1
         with:
-          command: clippy
-          args: -- -D warnings
+          version: '0.16.0'
+
+      - name: Upload code coverage report to Codecov
+        if: ${{ matrix.os == 'ubuntu-latest' && github.event_name == 'push' }}
+        uses: codecov/codecov-action@v1

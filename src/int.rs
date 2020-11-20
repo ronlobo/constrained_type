@@ -15,17 +15,16 @@ pub fn new_int<T, F, V>(
     max_val: V,
     val: V,
 ) -> ConstrainedTypeResult<T>
-where
-    F: Fn(V) -> T,
-    V: PrimInt + ToString,
+    where
+        F: Fn(V) -> T,
+        V: PrimInt + ToString,
 {
     if val < min_val {
         return ConstrainedTypeError::from(InvalidMinVal {
             field_name: field_name.into(),
             expected: min_val.to_string(),
             found: val.to_string(),
-        })
-        .into();
+        }).into();
     }
 
     if val > max_val {
@@ -33,8 +32,7 @@ where
             field_name: field_name.into(),
             expected: max_val.to_string(),
             found: val.to_string(),
-        })
-        .into();
+        }).into();
     }
 
     Ok(ctor(val))
@@ -81,28 +79,26 @@ mod test {
     #[test]
     fn it_errors_on_out_of_bounds_value() {
         assert_eq!(
-            unit_quantity::new("qty", 0,),
+            unit_quantity::new("qty", 0),
             ConstrainedTypeError::from(InvalidMinVal {
                 field_name: "qty".to_string(),
                 expected: 1.to_string(),
                 found: 0.to_string(),
-            })
-            .into()
+            }).into()
         );
 
         assert_eq!(
-            unit_quantity::new("qty", 1001,),
+            unit_quantity::new("qty", 1001),
             ConstrainedTypeError::from(InvalidMaxVal {
                 field_name: "qty".to_string(),
                 expected: 1000.to_string(),
                 found: 1001.to_string(),
-            })
-            .into()
+            }).into()
         );
     }
 
     #[test]
     fn it_can_construct_a_unit_quantity() {
-        assert_eq!(unit_quantity::new("qty", 1,).unwrap().value(), 1);
+        assert_eq!(unit_quantity::new("qty", 1).unwrap().value(), 1);
     }
 }

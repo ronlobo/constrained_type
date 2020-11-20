@@ -15,17 +15,16 @@ pub fn new_float<T, F, V>(
     max_val: V,
     val: V,
 ) -> ConstrainedTypeResult<T>
-where
-    F: Fn(V) -> T,
-    V: Float + ToString,
+    where
+        F: Fn(V) -> T,
+        V: Float + ToString,
 {
     if val < min_val {
         return ConstrainedTypeError::from(InvalidMinVal {
             field_name: field_name.to_string(),
             expected: min_val.to_string(),
             found: val.to_string(),
-        })
-        .into();
+        }).into();
     }
 
     if val > max_val {
@@ -33,8 +32,7 @@ where
             field_name: field_name.to_string(),
             expected: max_val.to_string(),
             found: val.to_string(),
-        })
-        .into();
+        }).into();
     }
 
     Ok(ctor(val))
@@ -77,8 +75,7 @@ mod test {
                 field_name: "qty".to_string(),
                 expected: (0.05).to_string(),
                 found: (0.04).to_string(),
-            })
-            .into()
+            }).into()
         );
 
         assert_eq!(
@@ -87,8 +84,7 @@ mod test {
                 field_name: "qty".to_string(),
                 expected: (100).to_string(),
                 found: (100.1).to_string(),
-            })
-            .into()
+            }).into()
         );
     }
 

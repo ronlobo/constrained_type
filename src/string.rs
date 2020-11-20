@@ -12,14 +12,13 @@ pub fn new_string<'a, T, F>(
     max_len: usize,
     val: &'a str,
 ) -> ConstrainedTypeResult<T>
-where
-    F: Fn(&'a str) -> T,
+    where
+        F: Fn(&'a str) -> T,
 {
     if val.is_empty() {
         return ConstrainedTypeError::from(InvalidOption {
             field_name: field_name.to_string(),
-        })
-        .into();
+        }).into();
     }
 
     if val.len() > max_len {
@@ -27,8 +26,7 @@ where
             field_name: field_name.to_string(),
             expected: max_len.to_string(),
             found: val.len().to_string(),
-        })
-        .into();
+        }).into();
     }
 
     Ok(ctor(val))
@@ -71,26 +69,24 @@ mod test {
             string_55::new("name", ""),
             ConstrainedTypeError::from(InvalidOption {
                 field_name: "name".to_string(),
-            })
-            .into()
+            }).into()
         );
     }
 
     #[test]
     fn it_validates_a_string55_max_len() {
         assert_eq!(
-            string_55::new("name", "🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺",),
+            string_55::new("name", "🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺"),
             ConstrainedTypeError::from(InvalidMaxLen {
                 field_name: "name".to_string(),
                 expected: (55).to_string(),
                 found: (56).to_string(),
-            })
-            .into()
+            }).into()
         );
     }
 
     #[test]
     fn it_can_construct_a_string55() {
-        assert_eq!(string_55::new("name", "🐺",).unwrap().value(), "🐺");
+        assert_eq!(string_55::new("name", "🐺").unwrap().value(), "🐺");
     }
 }
