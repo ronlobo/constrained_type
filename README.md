@@ -1,6 +1,6 @@
 # Constrained Type
 
-[![Coverage Status](https://coveralls.io/repos/github/ronlobo/constrained_type/badge.svg?branch=master)](https://coveralls.io/github/ronlobo/constrained_type?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/ronlobo/constrained_type/badge.svg?branch=trunk)](https://coveralls.io/github/ronlobo/constrained_type?branch=trunk)
 
 This is a simple project (personal learning) to help creating on the fly value objects aka constrained types.
 
