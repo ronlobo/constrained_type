@@ -15,11 +15,11 @@ pub fn new_string_option<'a, T, F>(
     where
         F: Fn(Option<&'a str>) -> T,
 {
-    if val != None && val.unwrap().len() > max_len {
+    if val != None && val.unwrap().chars().count() > max_len {
         return ConstrainedTypeError::from(InvalidMaxLen {
             field_name: field_name.to_string(),
             expected: max_len.to_string(),
-            found: val.unwrap().len().to_string(),
+            found: val.unwrap().chars().count().to_string(),
         }).into();
     }
 
@@ -31,19 +31,19 @@ mod test {
     use crate::error::ConstrainedTypeError;
     use crate::error::ConstrainedTypeErrorKind::InvalidMaxLen;
 
-    mod string_55_option {
+    mod string_5_option {
         use crate::error::ConstrainedTypeResult;
         use crate::string_option::new_string_option;
 
         #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-        pub struct String55Option {
+        pub struct String5Option {
             value: Option<String>,
         }
 
-        impl String55Option {
-            const MAX_LEN: usize = 55;
+        impl String5Option {
+            const MAX_LEN: usize = 5;
 
-            pub(crate) fn new<S: Into<String>>(raw: Option<S>) -> String55Option {
+            pub(crate) fn new<S: Into<String>>(raw: Option<S>) -> String5Option {
                 return match raw {
                     None => Self { value: None },
                     _ => Self {
@@ -60,38 +60,38 @@ mod test {
             }
         }
 
-        pub fn new(field_name: &str, str: Option<&str>) -> ConstrainedTypeResult<String55Option> {
+        pub fn new(field_name: &str, str: Option<&str>) -> ConstrainedTypeResult<String5Option> {
             new_string_option(
                 field_name,
-                |v| String55Option::new(v),
-                String55Option::MAX_LEN,
+                |v| String5Option::new(v),
+                String5Option::MAX_LEN,
                 str,
             )
         }
     }
 
     #[test]
-    fn it_validates_a_string55_option_max_len() {
+    fn it_validates_a_string5_option_max_len() {
         assert_eq!(
-            string_55_option::new("name", Some("🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺🐺")),
+            string_5_option::new("name", Some("🐺🐺🐺🐺🐺🐺")),
             ConstrainedTypeError::from(InvalidMaxLen {
                 field_name: "name".to_string(),
-                expected: (55).to_string(),
-                found: (56).to_string(),
+                expected: (5).to_string(),
+                found: (6).to_string(),
             }).into()
         );
     }
 
     #[test]
-    fn it_can_construct_a_string55option_with_some() {
+    fn it_can_construct_a_string5option_with_some() {
         assert_eq!(
-            string_55_option::new("name", Some("🐺")).unwrap().value(),
+            string_5_option::new("name", Some("🐺")).unwrap().value(),
             Some("🐺")
         );
     }
 
     #[test]
     fn it_can_construct_a_string55option_with_none() {
-        assert_eq!(string_55_option::new("name", None).unwrap().value(), None);
+        assert_eq!(string_5_option::new("name", None).unwrap().value(), None);
     }
 }
