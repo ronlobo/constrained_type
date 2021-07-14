@@ -6,6 +6,7 @@ use num_traits::Float;
 
 use crate::error::ConstrainedTypeErrorKind::{InvalidMaxVal, InvalidMinVal};
 use crate::error::{ConstrainedTypeError, ConstrainedTypeResult};
+use core::fmt;
 
 /// A builder function constraining a floating point number between a min/max value
 pub fn new_float<T, F, V>(
@@ -17,7 +18,7 @@ pub fn new_float<T, F, V>(
 ) -> ConstrainedTypeResult<T>
     where
         F: Fn(V) -> T,
-        V: Float + ToString,
+        V: Float + fmt::Display,
 {
     if val < min_val {
         return ConstrainedTypeError::from(InvalidMinVal {

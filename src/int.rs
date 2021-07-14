@@ -6,6 +6,7 @@ use num_traits::PrimInt;
 
 use crate::error::ConstrainedTypeErrorKind::{InvalidMaxVal, InvalidMinVal};
 use crate::error::{ConstrainedTypeError, ConstrainedTypeResult};
+use core::fmt;
 
 /// A builder function constraining an integer number between a minimum and maximum value
 pub fn new_int<T, F, V>(
@@ -17,11 +18,11 @@ pub fn new_int<T, F, V>(
 ) -> ConstrainedTypeResult<T>
     where
         F: Fn(V) -> T,
-        V: PrimInt + ToString,
+        V: PrimInt + fmt::Display,
 {
     if val < min_val {
         return ConstrainedTypeError::from(InvalidMinVal {
-            field_name: field_name.into(),
+            field_name: field_name.to_string(),
             expected: min_val.to_string(),
             found: val.to_string(),
         }).into();
@@ -29,7 +30,7 @@ pub fn new_int<T, F, V>(
 
     if val > max_val {
         return ConstrainedTypeError::from(InvalidMaxVal {
-            field_name: field_name.into(),
+            field_name: field_name.to_string(),
             expected: max_val.to_string(),
             found: val.to_string(),
         }).into();
