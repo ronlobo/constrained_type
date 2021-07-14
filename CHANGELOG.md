@@ -1,3 +1,11 @@
+## 0.1.3
+
+### Changed
+- Use Display trait instead of ToString trait for error representation of int and float
+- Fix max string length for string and string_option to character count instead of byte count
+- Allow to redact the error value for string_like structs for security reasons
+- Upgrade dependencies
+
 ## 0.1.2-alpha.3
 
 ### Changed

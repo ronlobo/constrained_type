@@ -18,4 +18,4 @@ The goal is to remove defensive code statements, ease implementing business inva
 
 Heavily inspired by <a href="https://github.com/swlaschin/DomainModelingMadeFunctional">"Domain Modelling Made Functional"</a>.
 
-For more complex types take a look at the various builder crates.
+For more complex types, please take a look at the various builder crates.
