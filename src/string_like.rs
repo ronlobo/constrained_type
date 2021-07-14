@@ -8,20 +8,27 @@ use crate::error::ConstrainedTypeErrorKind::InvalidPattern;
 use crate::error::{ConstrainedTypeError, ConstrainedTypeResult};
 
 /// A builder function constraining a String to match a given pattern
-pub fn new_string_like<'a, T, F>(
+pub fn new_string_like<'val, 'err_val, T, F>(
     field_name: &str,
     ctor: F,
     pattern: Regex,
-    val: &'a str,
+    val: &'val str,
+    err_val: Option<&'err_val str>,
 ) -> ConstrainedTypeResult<T>
     where
-        F: Fn(&'a str) -> T,
+        F: Fn(&'val str) -> T,
 {
     if !pattern.is_match(val) {
         return ConstrainedTypeError::from(InvalidPattern {
             field_name: field_name.to_string(),
             expected: pattern.to_string(),
-            found: val.to_string(),
+            found: {
+                if err_val != None {
+                    err_val.unwrap().to_string()
+                } else {
+                    val.to_string()
+                }
+            },
         }).into();
     }
 
@@ -56,12 +63,13 @@ pub mod test {
             }
         }
 
-        pub fn new(field_name: &str, raw: &str) -> ConstrainedTypeResult<EmailAddress> {
+        pub fn new(field_name: &str, raw: &str, err_val: Option<&str>) -> ConstrainedTypeResult<EmailAddress> {
             new_string_like(
                 field_name,
                 |v| EmailAddress::new(v),
                 Regex::new(EMAIL_PATTERN).unwrap(),
                 raw,
+                err_val,
             )
         }
     }
@@ -69,7 +77,7 @@ pub mod test {
     #[test]
     fn it_errors_on_invalid_email_address() {
         assert_eq!(
-            email_address::new("email", "@something"),
+            email_address::new("email", "@something", None),
             ConstrainedTypeError::from(InvalidPattern {
                 field_name: "email".to_string(),
                 expected: r".+@.+".to_string(),
@@ -78,7 +86,7 @@ pub mod test {
         );
 
         assert_eq!(
-            email_address::new("email", ""),
+            email_address::new("email", "", None),
             ConstrainedTypeError::from(InvalidPattern {
                 field_name: "email".to_string(),
                 expected: r".+@.+".to_string(),
@@ -88,9 +96,21 @@ pub mod test {
     }
 
     #[test]
+    fn it_redacts_value_with_error_value() {
+        assert_eq!(
+            email_address::new("email", "@something", Some("<redacted>")),
+            ConstrainedTypeError::from(InvalidPattern {
+                field_name: "email".to_string(),
+                expected: r".+@.+".to_string(),
+                found: "<redacted>".to_string(),
+            }).into()
+        );
+    }
+
+    #[test]
     fn it_can_construct_an_email_address() {
         assert_eq!(
-            email_address::new("email", "acmeinc@example.com")
+            email_address::new("email", "acmeinc@example.com", None)
                 .unwrap()
                 .value(),
             "acmeinc@example.com"

@@ -6,14 +6,14 @@ use crate::error::ConstrainedTypeErrorKind::InvalidMaxLen;
 use crate::error::{ConstrainedTypeError, ConstrainedTypeResult};
 
 /// A builder function constraining an optional String to not exceed a character limit
-pub fn new_string_option<'a, T, F>(
+pub fn new_string_option<'val, T, F>(
     field_name: &str,
     ctor: F,
     max_len: usize,
-    val: Option<&'a str>,
+    val: Option<&'val str>,
 ) -> ConstrainedTypeResult<T>
     where
-        F: Fn(Option<&'a str>) -> T,
+        F: Fn(Option<&'val str>) -> T,
 {
     if val != None && val.unwrap().chars().count() > max_len {
         return ConstrainedTypeError::from(InvalidMaxLen {

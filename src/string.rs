@@ -6,14 +6,14 @@ use crate::error::ConstrainedTypeErrorKind::{InvalidMaxLen, InvalidOption};
 use crate::error::{ConstrainedTypeError, ConstrainedTypeResult};
 
 /// A builder function constraining a String to be not empty and neither exceeding a character limit
-pub fn new_string<'a, T, F>(
+pub fn new_string<'val, T, F>(
     field_name: &str,
     ctor: F,
     max_len: usize,
-    val: &'a str,
+    val: &'val str,
 ) -> ConstrainedTypeResult<T>
     where
-        F: Fn(&'a str) -> T,
+        F: Fn(&'val str) -> T,
 {
     if val.is_empty() {
         return ConstrainedTypeError::from(InvalidOption {
