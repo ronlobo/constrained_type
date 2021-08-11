@@ -6,10 +6,10 @@
   <p>
 
 [![crates.io](https://img.shields.io/crates/v/constrained_type?label=latest)](https://crates.io/crates/constrained_type)
-[![Documentation](https://docs.rs/constrained_type/badge.svg?version=0.2.2)](https://docs.rs/constrained_type/0.2.2)
+[![Documentation](https://docs.rs/constrained_type/badge.svg?version=0.2.3)](https://docs.rs/constrained_type/0.2.3)
 [![Version](https://img.shields.io/badge/rustc-1.46+-ab6000.svg)](https://blog.rust-lang.org/2020/03/12/Rust-1.46.html)
 ![MIT or Apache 2.0 licensed](https://img.shields.io/crates/l/constrained_type.svg)
-[![Dependency Status](https://deps.rs/crate/constrained_type/0.2.2/status.svg)](https://deps.rs/crate/constrained_type/0.2.2)
+[![Dependency Status](https://deps.rs/crate/constrained_type/0.2.3/status.svg)](https://deps.rs/crate/constrained_type/0.2.3)
 <br />
 [![build status](https://github.com/ronlobo/constrained_type/workflows/CI%20%28Linux%29/badge.svg?branch=trunk&event=push)](https://github.com/ronlobo/constrained_type/actions)
 [![Coverage Status](https://coveralls.io/repos/github/ronlobo/constrained_type/badge.svg?branch=trunk)](https://coveralls.io/github/ronlobo/constrained_type?branch=trunk)

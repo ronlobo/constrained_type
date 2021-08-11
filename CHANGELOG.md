@@ -1,3 +1,6 @@
+## 0.2.3
+- Fix readme
+
 ## 0.2.2
 - Add some badges
 - Update changelog
