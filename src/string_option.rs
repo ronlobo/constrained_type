@@ -36,26 +36,22 @@ mod test {
         use crate::string_option::new_string_option;
 
         #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-        pub struct String5Option {
-            value: Option<String>,
-        }
+        pub struct String5Option(Option<String>);
 
         impl String5Option {
             const MAX_LEN: usize = 5;
 
             pub(crate) fn new<S: Into<String>>(raw: Option<S>) -> String5Option {
                 return match raw {
-                    None => Self { value: None },
-                    _ => Self {
-                        value: Some(raw.unwrap().into()),
-                    },
+                    None => Self(None),
+                    _ => Self(Some(raw.unwrap().into()))
                 };
             }
 
             pub fn value(&self) -> Option<&str> {
-                return match self.value {
+                return match self.0 {
                     None => None,
-                    _ => Some(self.value.as_ref().unwrap().as_str()),
+                    _ => Some(self.0.as_ref().unwrap().as_str()),
                 };
             }
         }

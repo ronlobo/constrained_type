@@ -42,19 +42,17 @@ mod test {
         use crate::string::new_string;
 
         #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
-        pub struct String5 {
-            value: String,
-        }
+        pub struct String5(String);
 
         impl String5 {
             const MAX_LEN: usize = 5;
 
             pub(crate) fn new<S: Into<String>>(raw: S) -> String5 {
-                Self { value: raw.into() }
+                Self(raw.into())
             }
 
             pub fn value(&self) -> &str {
-                &self.value
+                &self.0
             }
         }
 

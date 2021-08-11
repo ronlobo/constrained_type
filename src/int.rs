@@ -18,7 +18,7 @@ pub fn new_int<T, F, V>(
 ) -> ConstrainedTypeResult<T>
     where
         F: Fn(V) -> T,
-        V: PrimInt + fmt::Display,
+        V: PrimInt + fmt::Display + fmt::Debug,
 {
     if val < min_val {
         return ConstrainedTypeError::from(InvalidMinVal {
@@ -48,25 +48,23 @@ mod test {
         use crate::error::ConstrainedTypeResult;
         use crate::int::new_int;
 
-        const MIN_VAL: isize = 1;
-        const MAX_VAL: isize = 1000;
+        const MIN_VAL: u16 = 1;
+        const MAX_VAL: u16 = 1000;
 
         #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
-        pub struct UnitQuantity {
-            pub(crate) value: isize,
-        }
+        pub struct UnitQuantity(pub(crate) u16);
 
         impl UnitQuantity {
-            pub(crate) const fn new(value: isize) -> Self {
-                Self { value }
+            pub(crate) const fn new(value: u16) -> Self {
+                Self(value)
             }
 
-            pub const fn value(&self) -> isize {
-                self.value
+            pub const fn value(&self) -> u16 {
+                self.0
             }
         }
 
-        pub fn new(field_name: &str, value: isize) -> ConstrainedTypeResult<UnitQuantity> {
+        pub fn new(field_name: &str, value: u16) -> ConstrainedTypeResult<UnitQuantity> {
             new_int(
                 field_name,
                 |v| UnitQuantity::new(v),

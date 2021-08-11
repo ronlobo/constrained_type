@@ -18,7 +18,7 @@ pub fn new_float<T, F, V>(
 ) -> ConstrainedTypeResult<T>
     where
         F: Fn(V) -> T,
-        V: Float + fmt::Display,
+        V: Float + fmt::Display + fmt::Debug,
 {
     if val < min_val {
         return ConstrainedTypeError::from(InvalidMinVal {
@@ -49,21 +49,19 @@ mod test {
         use crate::float::new_float;
 
         #[derive(Debug, Clone, Copy, PartialEq, PartialOrd)]
-        pub struct KilogramQuantity {
-            value: f64,
-        }
+        pub struct KilogramQuantity(f32);
 
         impl KilogramQuantity {
-            pub(crate) const fn new(value: f64) -> Self {
-                Self { value }
+            pub(crate) const fn new(value: f32) -> Self {
+                Self(value)
             }
 
-            pub const fn value(&self) -> f64 {
-                self.value
+            pub const fn value(&self) -> f32 {
+                self.0
             }
         }
 
-        pub fn new(field_name: &str, value: f64) -> ConstrainedTypeResult<KilogramQuantity> {
+        pub fn new(field_name: &str, value: f32) -> ConstrainedTypeResult<KilogramQuantity> {
             new_float(field_name, |v| KilogramQuantity::new(v), 0.05, 100.0, value)
         }
     }
