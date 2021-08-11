@@ -1,3 +1,11 @@
+## 0.2.2
+- Add some badges
+- Update changelog
+
+## 0.2.1
+- Add explicit example for how to use this crate
+- Improve existing testing examples
+
 ## 0.2
 - Switch to fancy-regex crate to allow more fancy regex usage in string_like
 - Add a doc block test for string_like by implementing a password value object
