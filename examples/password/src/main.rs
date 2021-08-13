@@ -51,20 +51,18 @@ mod password {
     pub const PASSWORD_PATTERN: &str = r"^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[*.!@$%\^\&(){}\[\]:;<>,.?\/~_+\-=|\\]).{8,32}$";
 
     #[derive(Clone, PartialEq, Eq)]
-    pub struct Password {
-        pub(crate) value: Option<String>,
-    }
+    pub struct Password(pub(crate) Option<String>);
 
     impl Password {
         pub(crate) fn new<S: Into<String>>(raw: S) -> Password {
-            Self { value: Some(raw.into()) }
+            Self(Some(raw.into()))
         }
 
         pub fn value(&mut self) -> Result<String, &str> {
-            match &self.value {
+            match &self.0 {
                 Some(_) => {
-                    let value = self.value.as_ref().unwrap().to_string();
-                    self.value = None;
+                    let value = self.0.as_ref().unwrap().to_string();
+                    self.0 = None;
 
                     Ok(value)
                 }
@@ -75,7 +73,7 @@ mod password {
 
     impl Drop for Password {
         fn drop(&mut self) {
-            let v = &mut self.value;
+            let v = &mut self.0;
 
             match v {
                 Some(_) => {
@@ -128,32 +126,32 @@ pub mod test {
 
         assert_eq!(
             new("password", "T3st^^^^", Some("<redacted>")),
-            Ok(Password { value: Some("T3st^^^^".to_string()) })
+            Ok(Password(Some("T3st^^^^".to_string())))
         );
 
         assert_eq!(
             new("password", "T3st&&&&", Some("<redacted>")),
-            Ok(Password { value: Some("T3st&&&&".to_string()) })
+            Ok(Password(Some("T3st&&&&".to_string())))
         );
 
         assert_eq!(
             new("password", "T3st[[[[", Some("<redacted>")),
-            Ok(Password { value: Some("T3st[[[[".to_string()) })
+            Ok(Password(Some("T3st[[[[".to_string())))
         );
 
         assert_eq!(
             new("password", "T3st]]]]", Some("<redacted>")),
-            Ok(Password { value: Some("T3st]]]]".to_string()) })
+            Ok(Password(Some("T3st]]]]".to_string())))
         );
 
         assert_eq!(
             new("password", "T3st////", Some("<redacted>")),
-            Ok(Password { value: Some("T3st////".to_string()) })
+            Ok(Password(Some("T3st////".to_string())))
         );
 
         assert_eq!(
             new("password", "T3st\\\\\\\\", Some("<redacted>")),
-            Ok(Password { value: Some("T3st\\\\\\\\".to_string()) })
+            Ok(Password(Some("T3st\\\\\\\\".to_string())))
         );
 
         let mut pass = new("password", "T3st?^&[]", Some("<redacted>")).unwrap();

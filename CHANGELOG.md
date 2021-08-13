@@ -1,3 +1,6 @@
+## 0.2.4
+- Improve and add example
+
 ## 0.2.3
 - Fix readme
 
