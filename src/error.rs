@@ -13,7 +13,7 @@ pub type ConstrainedTypeResult<T> = ::std::result::Result<T, ConstrainedTypeErro
 #[derive(Error, Debug, Eq, PartialEq)]
 pub enum ConstrainedTypeErrorKind {
     /// Number exceeded the maximum value
-    #[error("{field_name:?} must not be less than {expected:?}, {found:?}")]
+    #[error("{field_name:?} must not be greater than {expected:?}, {found:?}")]
     InvalidMaxVal {
         /// Field name shown in the error
         field_name: String,
@@ -23,7 +23,7 @@ pub enum ConstrainedTypeErrorKind {
         found: String,
     },
     /// Number exceeded the minimum value
-    #[error("{field_name:?} must not be greater than {expected:?}, {found:?}")]
+    #[error("{field_name:?} must not be less than {expected:?}, {found:?}")]
     InvalidMinVal {
         /// Field name shown in the error
         field_name: String,

@@ -1,6 +1,6 @@
 [package]
 name = "constrained_type"
-version = "0.2.4"
+version = "0.2.5"
 authors = ["Ron Lobo <code@ronlobo.com>"]
 edition = "2018"
 description = "On the fly value objects in Rust."
@@ -11,4 +11,4 @@ license = "MIT/Apache-2.0"
 [dependencies]
 num-traits = "0.2.14"
 thiserror = "1.0.26"
-fancy-regex = "0.7.0"
+fancy-regex = "0.7.1"

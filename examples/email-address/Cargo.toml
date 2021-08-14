@@ -1,0 +1,13 @@
+[package]
+name = "email-address"
+version = "0.1.0"
+edition = "2018"
+authors = ["Ron Lobo <code@ronlobo.com>"]
+license = "MIT/Apache-2.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+constrained_type = { path = "../.." }
+fancy-regex = "0.7.1"
+structopt = "0.3.22"

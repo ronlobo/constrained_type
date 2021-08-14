@@ -1,3 +1,10 @@
+## 0.2.5
+- Make email address new type an explicit example
+- Add handle new type example
+- Improve examples
+- Fix wording for error kind
+- Fix dependencies
+
 ## 0.2.4
 - Improve and add example
 
